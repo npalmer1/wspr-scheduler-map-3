@@ -1,0 +1,963 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1279</width>
+    <height>780</height>
+   </rect>
+  </property>
+  <property name="font">
+   <font>
+    <family>Segoe UI</family>
+    <pointsize>9</pointsize>
+   </font>
+  </property>
+  <property name="windowTitle">
+   <string>WSPR Scheduler Map 3</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="mainLayout">
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>4</number>
+    </property>
+    <property name="bottomMargin">
+     <number>2</number>
+    </property>
+    <property name="horizontalSpacing">
+     <number>6</number>
+    </property>
+    <property name="verticalSpacing">
+     <number>2</number>
+    </property>
+    <item row="0" column="0">
+     <widget class="MapWidget" name="mapView" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>1</horstretch>
+        <verstretch>1</verstretch>
+       </sizepolicy>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0" colspan="2">
+     <layout class="QHBoxLayout" name="bottomLayout">
+      <property name="leftMargin">
+       <number>35</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="bottomlabel">
+        <property name="font">
+         <font>
+          <family>Segoe UI</family>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>label</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="bottomSpacer">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QLabel" name="countlabel">
+        <property name="font">
+         <font>
+          <family>Segoe UI</family>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="0" column="1">
+     <widget class="QWidget" name="rightPanel" native="true">
+      <property name="minimumSize">
+       <size>
+        <width>245</width>
+        <height>748</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>245</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <widget class="QLabel" name="headerlabel">
+       <property name="geometry">
+        <rect>
+         <x>9</x>
+         <y>5</y>
+         <width>230</width>
+         <height>32</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>---</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label2">
+       <property name="geometry">
+        <rect>
+         <x>17</x>
+         <y>43</y>
+         <width>60</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Segoe UI</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Period</string>
+       </property>
+      </widget>
+      <widget class="QListWidget" name="periodlistBox">
+       <property name="geometry">
+        <rect>
+         <x>14</x>
+         <y>59</y>
+         <width>74</width>
+         <height>212</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Segoe UI</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="horizontalScrollBarPolicy">
+        <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+       </property>
+       <item>
+        <property name="text">
+         <string>10 mins</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>20 mins</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>30 mins</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>1 hour</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>2 hours</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>3 hours</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>6 hours</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>9 hours</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>12 hours</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>18 hours</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>24 hours</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>2 days</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>4 days</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>7 days</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>10 days</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>14 days</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>21 days</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>28 days</string>
+        </property>
+       </item>
+      </widget>
+      <widget class="QLabel" name="label3">
+       <property name="geometry">
+        <rect>
+         <x>89</x>
+         <y>43</y>
+         <width>50</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Segoe UI</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Band</string>
+       </property>
+      </widget>
+      <widget class="QListWidget" name="bandlistBox">
+       <property name="geometry">
+        <rect>
+         <x>93</x>
+         <y>59</y>
+         <width>61</width>
+         <height>251</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Segoe UI</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="horizontalScrollBarPolicy">
+        <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+       </property>
+       <item>
+        <property name="text">
+         <string>All</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>LF</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>MF</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>160m</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>80m</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>60m</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>40m</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>30m</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>22m</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>20m</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>17m</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>15m</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>12m</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>10m</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>8m</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>6m</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>4m</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>2m</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>70cm</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>23cm</string>
+        </property>
+       </item>
+      </widget>
+      <widget class="QPushButton" name="filterbutton">
+       <property name="geometry">
+        <rect>
+         <x>170</x>
+         <y>60</y>
+         <width>52</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="toolTip">
+        <string>Update the map with these settings</string>
+       </property>
+       <property name="text">
+        <string>Apply</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="pathcheckBox">
+       <property name="geometry">
+        <rect>
+         <x>170</x>
+         <y>110</y>
+         <width>61</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Segoe UI</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>paths</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton1">
+       <property name="geometry">
+        <rect>
+         <x>170</x>
+         <y>140</y>
+         <width>61</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Segoe UI</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>TX + RX</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton2">
+       <property name="geometry">
+        <rect>
+         <x>170</x>
+         <y>160</y>
+         <width>61</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Segoe UI</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>TX only</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton3">
+       <property name="geometry">
+        <rect>
+         <x>170</x>
+         <y>183</y>
+         <width>61</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Segoe UI</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>RX only</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label8">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>284</y>
+         <width>61</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Segoe UI</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>De-clutter</string>
+       </property>
+      </widget>
+      <widget class="QListWidget" name="clutterlistBox">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>300</y>
+         <width>56</width>
+         <height>134</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Segoe UI</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="horizontalScrollBarPolicy">
+        <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+       </property>
+       <item>
+        <property name="text">
+         <string>0</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>50</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>100</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>200</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>400</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>600</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>800</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>1000</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>1200</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>1500</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>1800</string>
+        </property>
+       </item>
+      </widget>
+      <widget class="QLabel" name="mlslabel">
+       <property name="geometry">
+        <rect>
+         <x>90</x>
+         <y>330</y>
+         <width>30</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Segoe UI</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>mls</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="kmcheckBox">
+       <property name="geometry">
+        <rect>
+         <x>89</x>
+         <y>362</y>
+         <width>80</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Segoe UI</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>use km</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label4">
+       <property name="geometry">
+        <rect>
+         <x>99</x>
+         <y>389</y>
+         <width>120</width>
+         <height>45</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Red - my TX
+Blue - my RX
+Lt blue - QTH</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="QcheckBox">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>440</y>
+         <width>121</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Segoe UI</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Don't show special 
+calls (Q,  0 or 1)</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label9">
+       <property name="geometry">
+        <rect>
+         <x>29</x>
+         <y>480</y>
+         <width>42</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Segoe UI</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Zoom: </string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="Zoomlabel">
+       <property name="geometry">
+        <rect>
+         <x>73</x>
+         <y>480</y>
+         <width>30</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Segoe UI</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>2</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="recentrebutton">
+       <property name="geometry">
+        <rect>
+         <x>16</x>
+         <y>500</y>
+         <width>62</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Segoe UI</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Recentre</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="configbutton">
+       <property name="geometry">
+        <rect>
+         <x>93</x>
+         <y>500</y>
+         <width>58</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Segoe UI</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Config</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="autocheckBox">
+       <property name="geometry">
+        <rect>
+         <x>38</x>
+         <y>530</y>
+         <width>100</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Segoe UI</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string>Update the map every 10 minutes</string>
+       </property>
+       <property name="text">
+        <string>Auto track</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label10">
+       <property name="geometry">
+        <rect>
+         <x>12</x>
+         <y>560</y>
+         <width>70</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Segoe UI</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Centre on:</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="europeButton">
+       <property name="geometry">
+        <rect>
+         <x>11</x>
+         <y>580</y>
+         <width>61</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Segoe UI</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Europe</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="americasButton">
+       <property name="geometry">
+        <rect>
+         <x>80</x>
+         <y>580</y>
+         <width>61</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Segoe UI</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Americas</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pacificButton">
+       <property name="geometry">
+        <rect>
+         <x>149</x>
+         <y>580</y>
+         <width>62</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Segoe UI</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Pacific</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="livecheckBox">
+       <property name="geometry">
+        <rect>
+         <x>9</x>
+         <y>610</y>
+         <width>190</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Segoe UI</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>interrogate wspr.live 
+specifying call/reporter</string>
+       </property>
+      </widget>
+      <widget class="QWidget" name="Livepanel" native="true">
+       <property name="geometry">
+        <rect>
+         <x>9</x>
+         <y>634</y>
+         <width>216</width>
+         <height>89</height>
+        </rect>
+       </property>
+       <widget class="QLabel" name="livelabel">
+        <property name="geometry">
+         <rect>
+          <x>3</x>
+          <y>20</y>
+          <width>30</width>
+          <height>15</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Segoe UI</family>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Call:</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="liveCalltextBox">
+        <property name="geometry">
+         <rect>
+          <x>37</x>
+          <y>20</y>
+          <width>100</width>
+          <height>23</height>
+         </rect>
+        </property>
+        <property name="maxLength">
+         <number>15</number>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="livebutton">
+        <property name="geometry">
+         <rect>
+          <x>150</x>
+          <y>20</y>
+          <width>52</width>
+          <height>23</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Segoe UI</family>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Apply</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label11">
+        <property name="geometry">
+         <rect>
+          <x>8</x>
+          <y>60</y>
+          <width>200</width>
+          <height>30</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Segoe UI</family>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Note: points may be missed 
+if longer period selected</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QLabel" name="pinlabel">
+       <property name="geometry">
+        <rect>
+         <x>195</x>
+         <y>726</y>
+         <width>40</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>MapWidget</class>
+   <extends>QWidget</extends>
+   <header>mapwidget.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

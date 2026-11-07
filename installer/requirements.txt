@@ -1,0 +1,23 @@
+WSPR Scheduler Map 3 - what else this PC needs
+==============================================
+
+WSPR Scheduler Map 3 shows your WSPR reports on a world map: the stations you heard (blue pins, green
+paths) and the stations that heard you (red pins, purple paths), with the night side shaded.
+
+It needs:
+
+1. MySQL or MariaDB with the WSPR Scheduler databases - the same ones WSPR Scheduler uses:
+     wspr_rpt.received  - the stations you heard (written by WSPR Scheduler)
+     wspr_rx.reported   - the stations that heard you (written by WSPR Scheduler Live)
+   If WSPR Scheduler already runs on this PC, nothing else is needed. Otherwise see "The WSPR Scheduler
+   Database Configuration" at https://sourceforge.net/projects/wspr-scheduler/files/
+   The database password is read from DBmapcredential in your user folder (as WSPR Scheduler Map 2);
+   without one the default password is used. Change it with Config.
+
+2. An internet connection: the map itself comes from OpenStreetMap (tiles are kept on this PC once
+   downloaded), and "interrogate wspr.live" asks db1.wspr.live.
+
+Map data (c) OpenStreetMap contributors, https://www.openstreetmap.org/copyright
+
+Source code and bug reports: https://github.com/npalmer1/wspr-scheduler-map-3
+WSPR Scheduler Map 3 is free software under the GNU General Public License v3.
