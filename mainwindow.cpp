@@ -13,6 +13,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QRegularExpressionValidator>
 #include <QThread>
 #include <QTimer>
 #include <QVBoxLayout>
@@ -111,6 +112,7 @@ void MainWindow::start()
 {
     if (!m_dbFixed)
         m_db.password = readPassword();
+    m_manual = Map::readStation(m_home);
     m_loading->show();
     m_loading->raise();
     placeOverlays();
@@ -138,8 +140,9 @@ Map::Request MainWindow::currentRequest() const
              : u.radioButton3->isChecked() ? Map::Show::RxOnly
                                            : Map::Show::Both;
     r.showPaths = u.pathcheckBox->isChecked();
-    r.homeCall = m_call;
-    r.homeLocator = m_locator;
+    // Config's call / locator when given, else the ones found in the database (empty = look them up)
+    r.homeCall = m_manual.call.isEmpty() ? m_call : m_manual.call;
+    r.homeLocator = m_manual.locator.isEmpty() ? m_locator : m_manual.locator;
     return r;
 }
 
@@ -204,9 +207,15 @@ void MainWindow::finished(const Map::Result &res, Why why)
     }
     m_loadError->hide();
 
+    if (!live && !res.databaseDown) {
+        m_dbCall = res.dbCall;
+        m_dbLocator = res.dbLocator;
+    }
     if (!live && res.data.hasHome) {   // remember this station for the next updates
-        m_call = res.data.homeCall;
-        m_locator = res.data.homeLocator;
+        if (m_manual.call.isEmpty())   // keep the database's own, so clearing Config goes back to them
+            m_call = res.data.homeCall;
+        if (m_manual.locator.isEmpty())
+            m_locator = res.data.homeLocator;
         if (m_prevCall.isEmpty())
             m_prevCall = m_call;
         if (u.liveCalltextBox->text().isEmpty())
@@ -295,10 +304,67 @@ void MainWindow::openConfig()
     d.setStyleSheet("QDialog#configdialog { background-color: lightyellow; }");
     auto *lay = new QVBoxLayout(&d);
     auto *form = new QFormLayout;
-    auto *call = new QLineEdit(m_call, &d);
-    call->setReadOnly(true);
-    auto *loc = new QLineEdit(m_locator, &d);
-    loc->setReadOnly(true);
+    // C#: read-only, from the database. Here they can also be typed in (needed before there are any
+    // reports), but only with "Allow edit" ticked, and with a warning: they must be this station's
+    const bool manual = !m_manual.call.isEmpty() || !m_manual.locator.isEmpty();
+    auto *call = new QLineEdit(manual ? m_manual.call : m_dbCall, &d);
+    call->setObjectName("calltextBox");
+    call->setValidator(new QRegularExpressionValidator(QRegularExpression("[A-Za-z0-9/]{0,15}"), call));
+    auto *loc = new QLineEdit(manual ? m_manual.locator : m_dbLocator, &d);
+    loc->setObjectName("locatortextBox");
+    loc->setValidator(new QRegularExpressionValidator(
+        QRegularExpression("[A-Ra-r]{0,2}|[A-Ra-r]{2}[0-9]{1,2}|[A-Ra-r]{2}[0-9]{2}[A-Xa-x]{1,2}|"
+                           "[A-Ra-r]{2}[0-9]{2}[A-Xa-x]{2}[0-9]{1,2}"), loc));
+    auto *allow = new QCheckBox("Allow edit (use this callsign and locator, not the database's)", &d);
+    allow->setObjectName("alloweditcheckBox");
+    allow->setChecked(manual);
+    auto *warn = new QLabel(&d);
+    warn->setObjectName("stationwarning");
+    warn->setWordWrap(true);
+    warn->setTextFormat(Qt::RichText);
+    const QString dbText = m_dbCall.isEmpty() ? QString("The database has no received reports yet.")
+                                              : "The database has " + m_dbCall + " at " + m_dbLocator + ".";
+    auto fit = [warn, &d] {   // the warning's height changes with its text: make room for it
+        if (d.layout())
+            d.layout()->activate();
+        warn->setMinimumHeight(warn->heightForWidth(warn->width() > 50 ? warn->width() : 440) + 6);
+        d.adjustSize();
+    };
+    auto refresh = [=] {
+        const bool on = allow->isChecked();
+        call->setReadOnly(!on);
+        loc->setReadOnly(!on);
+        const QString bg = on ? "white" : "#f0f0f0";
+        call->setStyleSheet("QLineEdit { background: " + bg + "; }");
+        loc->setStyleSheet("QLineEdit { background: " + bg + "; }");
+        if (!on) {
+            warn->setText("From the newest report WSPR Scheduler received (wspr_rpt.received). " + dbText);
+            warn->setStyleSheet("color: #555;");
+            fit();
+            return;
+        }
+        const QString c = call->text().trimmed().toUpper(), l = loc->text().trimmed().toUpper();
+        const bool differs = !m_dbCall.isEmpty()
+                             && ((!c.isEmpty() && c != m_dbCall.toUpper())
+                                 || (!l.isEmpty() && !m_dbLocator.toUpper().startsWith(l.left(qMin(l.size(), m_dbLocator.size())))));
+        QString t = "<span style=\"color:#a05000\"><b>Warning:</b> these must be the callsign and locator of the station "
+                    "whose reports are in the database (WSPR Scheduler's), or the paths are drawn from the wrong "
+                    "place. " + dbText.toHtmlEscaped() + "</span>";
+        if (differs)
+            t += "<br><span style=\"color:#b00000\"><b>What you have typed is DIFFERENT from the database.</b></span>";
+        warn->setText(t);
+        warn->setStyleSheet(QString());
+        fit();
+    };
+    connect(allow, &QCheckBox::toggled, &d, [=](bool on) {
+        if (!on) {   // back to the database's
+            call->setText(m_dbCall);
+            loc->setText(m_dbLocator);
+        }
+        refresh();
+    });
+    connect(call, &QLineEdit::textChanged, &d, refresh);
+    connect(loc, &QLineEdit::textChanged, &d, refresh);
     auto *pass = new QLineEdit(m_db.password, &d);
     pass->setObjectName("passtextBox");
     pass->setEchoMode(QLineEdit::Password);
@@ -308,24 +374,44 @@ void MainWindow::openConfig()
     });
     form->addRow("Station callsign:", call);
     form->addRow("Station locator:", loc);
+    form->addRow(QString(), allow);
     form->addRow("Database password:", pass);
     form->addRow(QString(), show);
     lay->addLayout(form);
+    lay->addWidget(warn);
+    d.setMinimumWidth(500);
+    lay->setSizeConstraint(QLayout::SetMinimumSize);
+    refresh();
     auto *buttons = new QDialogButtonBox(QDialogButtonBox::Save | QDialogButtonBox::Cancel, &d);
     connect(buttons, &QDialogButtonBox::accepted, &d, &QDialog::accept);
     connect(buttons, &QDialogButtonBox::rejected, &d, &QDialog::reject);
     lay->addWidget(buttons);
     if (d.exec() != QDialog::Accepted)
         return;
+    Map::Station typed;   // unticked: none (the database's are used)
+    if (allow->isChecked())
+        typed = {call->text().trimmed().toUpper(), loc->text().trimmed().toUpper()};
+    if (!typed.locator.isEmpty() && !Map::locatorToLatLon(typed.locator)) {
+        Msg::timed(this, "\"" + typed.locator + "\" isn't a locator (4, 6 or 8 characters, e.g. IO90GU)", "Config", 3500);
+        typed.locator.clear();
+    }
+    bool redo = false;
+    if (typed.call != m_manual.call || typed.locator != m_manual.locator) {
+        if (!Map::writeStation(typed, m_home))
+            Msg::timed(this, "Unable to save the callsign and locator", "Config", 3000);
+        m_manual = typed;
+        redo = true;
+    }
     const QString pw = pass->text().trimmed();
     if (!Security::writeDbCredentialFile(kCredentialFile, "receiver", pw, m_home))   // C#: saveUserandPassword
         Msg::timed(this, "Unable to save database credentials", "Config", 3000);
     if (pw != m_db.password) {   // C# saved it but kept using the old one until restarted
         m_db.password = pw;
         m_indexesChecked = false;
-        if (!m_gettingData)
-            runUpdate(Why::Apply);
+        redo = true;
     }
+    if (redo && !m_gettingData)
+        runUpdate(Why::Apply);
 }
 
 // ---- overlays ------------------------------------------------------------------------------------

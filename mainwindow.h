@@ -62,7 +62,9 @@ private:
     QString m_home;
     Map::DbSettings m_db;
     QString m_call, m_locator;           // this station (local databases)
+    QString m_dbCall, m_dbLocator;       // as the database has it (empty = no reports yet)
     QString m_prevCall;
+    Map::Station m_manual;               // typed in Config (~/WSPRmapstation); empty = from the database
     bool m_dbFixed = false;
     bool m_gettingData = false;
     bool m_indexesChecked = false;

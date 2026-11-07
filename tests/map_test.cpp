@@ -9,6 +9,7 @@
 #include <QSqlQuery>
 #include <QTcpServer>
 #include <QTcpSocket>
+#include <QTemporaryDir>
 #include <QThread>
 #include <QTimeZone>
 #include <QUrl>
@@ -129,6 +130,17 @@ static void testPure()
     const auto row = parseLiveRow("14\tW1AW\t41.7\t-72.7\tFN31\tG4GCI\t51.3\t-1.0\tIO90GU\t5300");
     CHECK(row && row->band == 14 && row->rxSign == "W1AW" && row->txLoc == "IO90GU" && row->distance == 5300);
     CHECK(!parseLiveRow("nonsense"));
+}
+
+static void testStationFile()
+{
+    QTemporaryDir home;
+    CHECK(Map::readStation(home.path()).call.isEmpty());
+    CHECK(Map::writeStation({"g4gci", "io90gu"}, home.path()));
+    const Map::Station st = Map::readStation(home.path());
+    CHECK(st.call == "G4GCI" && st.locator == "IO90GU");
+    CHECK(Map::writeStation({"", ""}, home.path()) && Map::readStation(home.path()).call.isEmpty());   // cleared
+    CHECK(Map::writeStation({"G4GCI", "XX99"}, home.path()) && Map::readStation(home.path()).locator.isEmpty());
 }
 
 static void testLive()
@@ -273,6 +285,28 @@ static void testDatabase()
     }
     QSqlDatabase::removeDatabase("check");
 
+    // no reports received yet: Config's call and locator
+    {
+        QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL", "empty");
+        db.setHostName(s.host);
+        db.setUserName(s.user);
+        db.setPassword(s.password);
+        db.open();
+        exec(db, "CREATE DATABASE wspr_map_test_rpt");
+        exec(db, "CREATE TABLE wspr_map_test_rpt.received (datetime DATETIME NOT NULL, band SMALLINT, tx_sign VARCHAR(15), "
+                 "tx_loc VARCHAR(10), frequency DOUBLE, distance INT, reporter VARCHAR(20), reporter_loc VARCHAR(10))");
+        Map::Request none;
+        CHECK(!Map::buildMap(none, s).data.hasHome && Map::buildMap(none, s).error.contains("Config"));
+        none.homeCall = "G4GCI";
+        none.homeLocator = "IO90GU";
+        const Map::Result typed = Map::buildMap(none, s);
+        CHECK(typed.error.isEmpty() && typed.data.hasHome && typed.data.homeCall == "G4GCI"
+              && std::abs(typed.data.home.lat - 50.854) < 0.01);
+        exec(db, "DROP DATABASE wspr_map_test_rpt");
+        db.close();
+    }
+    QSqlDatabase::removeDatabase("empty");
+
     Map::DbSettings wrong = s;
     wrong.port = 1;   // nothing listening: quick
     res = Map::buildMap(Map::Request(), wrong);
@@ -284,6 +318,7 @@ int main(int argc, char **argv)
     QCoreApplication app(argc, argv);
     setvbuf(stdout, nullptr, _IONBF, 0);
     testPure();
+    testStationFile();
     testLive();
     testDatabase();
     std::printf(failures ? "map_test: %d FAILED\n" : "map_test: all passed\n", failures);

@@ -9,6 +9,11 @@
 #include "ui_mainwindow.h"
 
 #include <QApplication>
+#include <QCheckBox>
+#include <QDialog>
+#include <QLabel>
+#include <QLineEdit>
+#include <QTimer>
 #include <QElapsedTimer>
 #include <QListWidget>
 #include <QSignalSpy>
@@ -174,6 +179,42 @@ int main(int argc, char **argv)
     CHECK(homeTip.contains("Home Station") && homeTip.contains("G4GCI"));
     CHECK(u.mapView->labelAt(onScreen(vk.lat, vk.lon) + QPoint(0, -8)) == vk.label);
     CHECK(u.mapView->labelAt(onScreen(vk.lat, vk.lon) + QPoint(30, 30)).isEmpty());
+
+    // Config: call / locator read-only until "Allow edit"; a warning, red when it differs from the database
+    auto inConfig = [&](const std::function<void(QDialog *)> &f) {
+        QTimer::singleShot(200, [&, f] {
+            auto *d = qobject_cast<QDialog *>(QApplication::activeModalWidget());
+            CHECK(d != nullptr);
+            if (d)
+                f(d);
+        });
+        u.configbutton->click();
+    };
+    inConfig([&](QDialog *d) {
+        auto *call = d->findChild<QLineEdit *>("calltextBox");
+        auto *allow = d->findChild<QCheckBox *>("alloweditcheckBox");
+        auto *warn = d->findChild<QLabel *>("stationwarning");
+        CHECK(call->isReadOnly() && call->text() == "G4GCI" && !allow->isChecked());
+        CHECK(warn->text().contains("The database has G4GCI at IO90GU"));
+        allow->setChecked(true);
+        CHECK(!call->isReadOnly() && warn->text().contains("Warning:") && !warn->text().contains("DIFFERENT"));
+        call->setText("M0XYZ");
+        CHECK(warn->text().contains("DIFFERENT"));
+        if (!qEnvironmentVariable("WSPRMAP_SHOT_CONFIG").isEmpty())
+            d->grab().save(qEnvironmentVariable("WSPRMAP_SHOT_CONFIG"));
+        d->accept();
+    });
+    CHECK(waitFor([&] { return !w.busy() && u.headerlabel->text().startsWith("Reports for: M0XYZ"); }, 20000));
+    CHECK(Map::readStation(home.path()).call == "M0XYZ");
+    inConfig([&](QDialog *d) {
+        auto *allow = d->findChild<QCheckBox *>("alloweditcheckBox");
+        CHECK(allow->isChecked() && d->findChild<QLineEdit *>("calltextBox")->text() == "M0XYZ");
+        allow->setChecked(false);   // back to the database's
+        CHECK(d->findChild<QLineEdit *>("calltextBox")->text() == "G4GCI");
+        d->accept();
+    });
+    CHECK(waitFor([&] { return !w.busy() && u.headerlabel->text().startsWith("Reports for: G4GCI"); }, 20000));
+    CHECK(Map::readStation(home.path()).call.isEmpty());
 
     // paths off and on: no new update needed
     const int before = updated.count();

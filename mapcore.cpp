@@ -1,7 +1,10 @@
 // WSPR Scheduler Map 3 core - see mapcore.h.
 #include "mapcore.h"
 
+#include <QDir>
 #include <QElapsedTimer>
+#include <QFile>
+#include <QTextStream>
 #include <QEventLoop>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -410,6 +413,36 @@ std::optional<Station> findOwnStation(const DbSettings &s, QString *err)
     return st;
 }
 
+static QString stationPath(const QString &homeDir)
+{
+    return QDir(homeDir.isEmpty() ? QDir::homePath() : homeDir).filePath("WSPRmapstation");
+}
+
+Station readStation(const QString &homeDir)
+{
+    Station st;
+    QFile f(stationPath(homeDir));
+    if (!f.open(QIODevice::ReadOnly | QIODevice::Text))
+        return st;
+    QTextStream in(&f);
+    st.call = in.readLine().trimmed().toUpper();
+    st.locator = in.readLine().trimmed().toUpper();
+    if (!st.locator.isEmpty() && !locatorToLatLon(st.locator))
+        st.locator.clear();   // not a locator: ignore it
+    return st;
+}
+
+bool writeStation(const Station &st, const QString &homeDir)
+{
+    if (st.call.trimmed().isEmpty() && st.locator.trimmed().isEmpty())
+        return !QFile::exists(stationPath(homeDir)) || QFile::remove(stationPath(homeDir));   // back to the database
+    QFile f(stationPath(homeDir));
+    if (!f.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
+        return false;
+    QTextStream(&f) << st.call.trimmed().toUpper() << '\n' << st.locator.trimmed().toUpper() << '\n';
+    return true;
+}
+
 void ensureIndexes(const DbSettings &s)
 {
     // MariaDB has CREATE INDEX IF NOT EXISTS; MySQL 8 doesn't, so look first
@@ -589,11 +622,15 @@ Result buildMap(const Request &r, const DbSettings &db)
         return res;
     }
     QString homeLoc = r.homeLocator, homeCall = r.homeCall;
-    if (homeLoc.isEmpty() || homeCall.isEmpty()) {   // C#: not found at start-up: try again
+    {   // C#: find_reportedRX - always, so a call / locator typed in Config can be compared with it
         QString err;
         if (const auto st = findOwnStation(db, &err)) {
-            homeLoc = st->locator;
-            homeCall = st->call;
+            res.dbCall = st->call;
+            res.dbLocator = st->locator;
+            if (homeLoc.isEmpty())   // only what Config didn't give
+                homeLoc = st->locator;
+            if (homeCall.isEmpty())
+                homeCall = st->call;
         } else if (!err.isEmpty() && !err.startsWith("no reports")) {
             res.databaseDown = true;
             res.error = err;
@@ -602,7 +639,8 @@ Result buildMap(const Request &r, const DbSettings &db)
     }
     const auto home = locatorToLatLon(homeLoc);
     if (!home) {
-        res.error = "Cannot load map - locator not found in database.";
+        res.error = "Cannot load map - locator not found in database.\n"
+                    "Enter your callsign and locator with Config.";
         return res;
     }
     res.data.hasHome = true;
@@ -616,7 +654,9 @@ Result buildMap(const Request &r, const DbSettings &db)
     if (wantRx && !readReceived(r, db, from, now, res.data, &err))
         res.error = "Error reading wspr_rpt.received: " + err;
     err.clear();
-    if (wantTx && !readReported(r, db, from, now, res.data, &err) && !err.contains("doesn't exist"))
+    // no wspr_rx at all (WSPR Scheduler Live not used): just no TX pins, as C#
+    if (wantTx && !readReported(r, db, from, now, res.data, &err) && !err.contains("doesn't exist")
+        && !err.contains("Unknown database", Qt::CaseInsensitive))
         res.error = (res.error.isEmpty() ? QString() : res.error + "\n") + "Error reading wspr_rx.reported: " + err;
     return res;
 }

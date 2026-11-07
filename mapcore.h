@@ -109,6 +109,7 @@ struct Result
     QString error;               // why there is nothing (or less) to show; empty = fine
     bool databaseDown = false;   // local: couldn't open the databases at all
     QString notice;              // something to tell the user that isn't an error
+    QString dbCall, dbLocator;   // local: this station as the database has it (even when Config's are used)
 };
 
 // ---- local databases -----------------------------------------------------------------------------
@@ -131,6 +132,11 @@ struct Station
     QString call, locator;
 };
 std::optional<Station> findOwnStation(const DbSettings &db, QString *err);
+
+// this station as typed in Config (~/WSPRmapstation: the call on the first line, the locator on the
+// second) - used instead of the database's when set, e.g. before WSPR Scheduler has received anything
+Station readStation(const QString &homeDir = QString());
+bool writeStation(const Station &st, const QString &homeDir = QString());
 
 // C#: EnsureIndexes - the indexes that make the time searches quick (errors ignored)
 void ensureIndexes(const DbSettings &db);
