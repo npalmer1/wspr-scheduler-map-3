@@ -8,12 +8,12 @@ Trixie) should work the same.
 1. Download the install script and run it, as your normal user (it asks for your password itself):
 
    ```
-   wget https://raw.githubusercontent.com/npalmer1/wspr-scheduler-map-3/main/linux/install.sh
-   bash install.sh
+   wget https://raw.githubusercontent.com/npalmer1/wspr-scheduler-map-3/main/linux/map_install.sh
+   bash map_install.sh
    ```
 
    It installs git if needed, downloads WSPR Scheduler Map 3 into `~/wspr-scheduler-map-3`, and installs it.
-   (If you already have a copy cloned from GitHub, `bash linux/install.sh` in it does the same.)
+   (If you already have a copy cloned from GitHub, `bash linux/map_install.sh` in it does the same.)
 
 2. Start **WSPR Scheduler Map 3** from the applications menu (or type `WsprMap`).
 
@@ -44,7 +44,7 @@ is), `--no-mysql` (the databases are on another PC), `--uninstall`.
 Run the script again:
 
 ```
-bash ~/wspr-scheduler-map-3/linux/install.sh
+bash ~/wspr-scheduler-map-3/linux/map_install.sh
 ```
 
 It pulls the latest version from GitHub, rebuilds and reinstalls the program; the databases and settings
@@ -54,7 +54,7 @@ are kept. If you have changed files in `~/wspr-scheduler-map-3` yourself, it sto
 ## Uninstall
 
 ```
-bash ~/wspr-scheduler-map-3/linux/install.sh --uninstall
+bash ~/wspr-scheduler-map-3/linux/map_install.sh --uninstall
 ```
 
 removes the program and its menu entry. The source folder, the databases and your settings stay.

@@ -2,9 +2,9 @@
 # WSPR Scheduler Map 3 - install or update on Ubuntu / Debian / Raspberry Pi OS.
 #
 # Just this script is enough - download it and run it:
-#   wget https://raw.githubusercontent.com/npalmer1/wspr-scheduler-map-3/main/linux/install.sh
-#   bash install.sh
-# (or, in a folder already cloned from GitHub:  bash linux/install.sh)
+#   wget https://raw.githubusercontent.com/npalmer1/wspr-scheduler-map-3/main/linux/map_install.sh
+#   bash map_install.sh
+# (or, in a folder already cloned from GitHub:  bash linux/map_install.sh)
 #
 # It asks for your password (sudo) where it needs it, and:
 #   0. installs git if it isn't there, and gets the source: clones it into ~/wspr-scheduler-map-3, or if that's
@@ -167,7 +167,7 @@ if [ -z "${WSPR_MAP_BOOTSTRAPPED:-}" ] && [ "$UPDATE" = 1 ]; then
     export WSPR_MAP_BOOTSTRAPPED=1
     NEXT=(--dir "$DEST" --no-update)
     [ "$WITH_MYSQL" = 0 ] && NEXT+=(--no-mysql)
-    exec bash "$DEST/linux/install.sh" "${NEXT[@]}"
+    exec bash "$DEST/linux/map_install.sh" "${NEXT[@]}"
 fi
 
 SRC="$DEST"

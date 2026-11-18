@@ -45,8 +45,8 @@ The Windows installer for SourceForge is made with `installer\make_release.bat` 
 On Ubuntu, Debian or Raspberry Pi OS one script installs everything and builds the program:
 
 ```
-wget https://raw.githubusercontent.com/npalmer1/wspr-scheduler-map-3/main/linux/install.sh
-bash install.sh
+wget https://raw.githubusercontent.com/npalmer1/wspr-scheduler-map-3/main/linux/map_install.sh
+bash map_install.sh
 ```
 
 Run it again to update. See [linux/README.md](linux/README.md).
