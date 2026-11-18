@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=WSPR Scheduler Map 3
+GenericName=WSPR reports on a map
+Comment=Show WSPR transmit and receive reports on a world map
+Exec=WsprMap
+Icon=wspr-scheduler-map-3
+Terminal=false
+Categories=Network;HamRadio;
+Keywords=WSPR;ham;radio;map;

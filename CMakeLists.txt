@@ -63,6 +63,14 @@ if(WIN32)
     endif()
 endif()
 
+# Linux: "cmake --install" (linux/install.sh does it): the program, a menu entry and its icon
+if(UNIX AND NOT APPLE)
+    include(GNUInstallDirs)
+    install(TARGETS WsprMap RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+    install(FILES linux/wspr-scheduler-map-3.desktop DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
+    install(FILES linux/wspr-scheduler-map-3.png DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/256x256/apps)
+endif()
+
 option(WSPRMAP_TESTS "Build the tests (the database ones need a scratch MySQL, never the real one)" OFF)
 if(WSPRMAP_TESTS)
     add_executable(map_test tests/map_test.cpp)   # core: locators, paths, night, lists; fake wspr.live; scratch MySQL

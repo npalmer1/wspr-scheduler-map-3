@@ -40,6 +40,17 @@ Tests: configure with `-DWSPRMAP_TESTS=ON`. The database tests use scratch datab
 (`wspr_map_test_rpt`, `wspr_map_test_rx`) on a local MySQL, never the real ones.
 The Windows installer for SourceForge is made with `installer\make_release.bat` (see installer\README.md).
 
+## Linux
+
+On Ubuntu, Debian or Raspberry Pi OS one script installs everything and builds the program:
+
+```
+wget https://raw.githubusercontent.com/npalmer1/wspr-scheduler-map-3/main/linux/install.sh
+bash install.sh
+```
+
+Run it again to update. See [linux/README.md](linux/README.md).
+
 ## Licence
 
 GNU General Public License v3.0. See [LICENSE](LICENSE).

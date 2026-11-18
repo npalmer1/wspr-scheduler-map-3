@@ -15,6 +15,7 @@ int main(int argc, char *argv[])
     QApplication::setOrganizationName("G4GCI");
     QApplication::setApplicationVersion(WSPRMAP_VERSION);
     QApplication::setWindowIcon(QIcon(":/wsprmap.ico"));
+    QGuiApplication::setDesktopFileName("wspr-scheduler-map-3");   // Linux: the menu entry's icon in the taskbar
 
     MainWindow w;
     w.show();
